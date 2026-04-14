@@ -1,0 +1,56 @@
+:root {
+	--brand-primary: #e8632b;
+	--brand-primary-strong: #c8521f;
+
+	--body-background-color: #f5f5f5;
+	--body-text-color: #333333;
+	--card-background-color: #ffffff;
+	--nav-background-color: #ffffff;
+	--nav-border-bottom-color: #e6e6e6;
+	--nav-current-border-bottom-color: var(--brand-primary);
+	--card-border-color: #e6e6e6;
+
+	--up-border-left-color: #16a34a;
+	--degraded-border-left-color: #eab308;
+	--down-border-left-color: #dc2626;
+	--down-background-color: #fee2e2;
+
+	--tag-color: #ffffff;
+	--tag-up-background-color: #16a34a;
+	--tag-degraded-background-color: #eab308;
+	--tag-down-background-color: #dc2626;
+	--change-background-color: #eab308;
+
+	--submit-button-border-color: var(--brand-primary-strong);
+	--submit-button-background-color: var(--brand-primary);
+	--submit-button-color: #ffffff;
+	--error-button-border-color: var(--brand-primary-strong);
+	--error-button-background-color: var(--brand-primary);
+	--error-button-color: #ffffff;
+
+	--graph-opacity: 1;
+	--graph-filter: none;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--body-background-color: #141414;
+		--body-text-color: #e6e6e6;
+		--card-background-color: #1f1f1f;
+		--nav-background-color: #1f1f1f;
+		--nav-border-bottom-color: #333333;
+		--card-border-color: #333333;
+
+		--down-background-color: #4a1d1d;
+		--tag-color: #1f1f1f;
+
+		--graph-opacity: 0.9;
+		--graph-filter: brightness(0.85);
+	}
+}
+
+html,
+body {
+	font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 14px;
+}
