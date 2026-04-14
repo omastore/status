@@ -29,7 +29,7 @@
 	--error-button-color: #ffffff;
 
 	--graph-opacity: 1;
-	--graph-filter: none;
+	--graph-filter: hue-rotate(-150deg) saturate(1.4);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,7 +45,7 @@
 		--tag-color: #1f1f1f;
 
 		--graph-opacity: 0.9;
-		--graph-filter: brightness(0.85);
+		--graph-filter: hue-rotate(-150deg) saturate(1.4) brightness(0.9);
 	}
 }
 
