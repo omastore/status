@@ -46,7 +46,7 @@ article.graph::before {
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center right;
-	filter: hue-rotate(-150deg) saturate(1.4);
+	filter: hue-rotate(-158deg) saturate(8) brightness(0.925);
 	pointer-events: none;
 	z-index: 0;
 }
@@ -73,7 +73,7 @@ article.graph > * {
 	}
 
 	article.graph::before {
-		filter: hue-rotate(-150deg) saturate(1.4) brightness(0.9);
+		filter: hue-rotate(-158deg) saturate(8) brightness(0.8);
 	}
 }
 
