@@ -22,18 +22,20 @@
     "url": "https://api.omastore.fi/health/nginx",
     "icon": "https://icons.duckduckgo.com/ip3/api.omastore.fi.ico",
     "slug": "omastore-admin",
-    "status": "up",
-    "uptime": "100.00%",
-    "uptimeDay": "100.00%",
-    "uptimeWeek": "100.00%",
-    "uptimeMonth": "100.00%",
-    "uptimeYear": "100.00%",
-    "time": 748,
-    "timeDay": 748,
-    "timeWeek": 748,
-    "timeMonth": 748,
-    "timeYear": 748,
-    "dailyMinutesDown": {}
+    "status": "degraded",
+    "uptime": "99.98%",
+    "uptimeDay": "99.98%",
+    "uptimeWeek": "99.98%",
+    "uptimeMonth": "99.98%",
+    "uptimeYear": "99.98%",
+    "time": 771,
+    "timeDay": 771,
+    "timeWeek": 771,
+    "timeMonth": 771,
+    "timeYear": 771,
+    "dailyMinutesDown": {
+      "2026-04-14": 0
+    }
   },
   {
     "name": "Omastore API",
