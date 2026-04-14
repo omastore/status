@@ -90,11 +90,13 @@
   function renderServices(state) {
     const root = el('services');
     root.innerHTML = '';
-    const today = new Date();
+    const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Helsinki' }).format(new Date());
+    const [hy, hm, hd] = todayStr.split('-').map(Number);
+    const anchor = new Date(Date.UTC(hy, hm - 1, hd));
     const dates = [];
     for (let i = HISTORY_DAYS - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setUTCDate(today.getUTCDate() - i);
+      const d = new Date(anchor);
+      d.setUTCDate(anchor.getUTCDate() - i);
       dates.push(d.toISOString().slice(0, 10));
     }
 

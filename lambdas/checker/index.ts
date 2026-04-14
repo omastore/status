@@ -49,12 +49,14 @@ async function safeText(res: Response): Promise<string> {
   }
 }
 
-function todayUtc(): string {
-  return new Date().toISOString().slice(0, 10);
+const DATE_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Helsinki' });
+
+function todayHelsinki(): string {
+  return DATE_FMT.format(new Date());
 }
 
 function bumpHistory(state: State, key: ServiceDef['key'], status: Status): void {
-  const date = todayUtc();
+  const date = todayHelsinki();
   const buckets = state.history[key];
   let bucket = buckets[buckets.length - 1];
   if (!bucket || bucket.date !== date) {
