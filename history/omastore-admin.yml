@@ -1,7 +1,7 @@
 url: https://api.omastore.fi/health/nginx
-status: up
+status: degraded
 code: 200
-responseTime: 677
-lastUpdated: 2026-04-14T10:13:12.198Z
+responseTime: 889
+lastUpdated: 2026-04-14T13:09:17.271Z
 startTime: 2026-04-14T08:00:50.243Z
 generator: Upptime <https://github.com/upptime/upptime>
