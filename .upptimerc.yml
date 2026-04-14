@@ -13,7 +13,8 @@ sites:
 
 status-website:
   cname: status.omastore.fi
-  logoUrl: https://raw.githubusercontent.com/omastore/status/main/assets/logo.png
+  logoUrl: https://status.omastore.fi/logo.png
+  favicon: https://status.omastore.fi/logo.png
   name: Omastore Status
   introTitle: "**Omastore** service status"
   introMessage: >-
