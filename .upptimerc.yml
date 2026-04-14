@@ -24,7 +24,7 @@ status-website:
       href: /
     - title: Omastore
       href: https://omastore.fi
-  themeUrl: https://raw.githubusercontent.com/omastore/status/main/assets/theme.css
+  themeUrl: https://status.omastore.fi/theme.css
   links:
     - rel: preconnect
       href: https://fonts.googleapis.com
