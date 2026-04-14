@@ -4,6 +4,13 @@
   const STATE_URL = '/state.json';
   const POLL_MS = 10_000;
   const HISTORY_DAYS = 90;
+  const MOBILE_DAYS = 30;
+  const MOBILE_BREAKPOINT = 640;
+
+  const visibleDays = () =>
+    window.innerWidth < MOBILE_BREAKPOINT ? MOBILE_DAYS : HISTORY_DAYS;
+
+  let lastState = null;
 
   const el = (id) => document.getElementById(id);
 
@@ -90,11 +97,12 @@
   function renderServices(state) {
     const root = el('services');
     root.innerHTML = '';
+    const days = visibleDays();
     const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Helsinki' }).format(new Date());
     const [hy, hm, hd] = todayStr.split('-').map(Number);
     const anchor = new Date(Date.UTC(hy, hm - 1, hd));
     const dates = [];
-    for (let i = HISTORY_DAYS - 1; i >= 0; i--) {
+    for (let i = days - 1; i >= 0; i--) {
       const d = new Date(anchor);
       d.setUTCDate(anchor.getUTCDate() - i);
       dates.push(d.toISOString().slice(0, 10));
@@ -102,7 +110,6 @@
 
     for (const svc of Object.values(state.services)) {
       const byDate = bucketsByDate(state.history[svc.key] || []);
-      const pct = uptimePercent(state.history[svc.key] || []);
       const wrap = document.createElement('article');
       wrap.className = 'service';
 
@@ -138,9 +145,11 @@
       const foot = document.createElement('div');
       foot.className = 'bar-footer';
       const left2 = document.createElement('span');
-      left2.textContent = `${HISTORY_DAYS} päivää sitten`;
+      left2.textContent = `${days} päivää sitten`;
+      const windowBuckets = (state.history[svc.key] || []).slice(-days);
+      const windowPct = uptimePercent(windowBuckets);
       const mid = document.createElement('span');
-      mid.textContent = pct === null ? 'Ei vielä dataa' : `${pct.toFixed(2)} % käytettävyys`;
+      mid.textContent = windowPct === null ? 'Ei vielä dataa' : `${windowPct.toFixed(2)} % käytettävyys`;
       const right2 = document.createElement('span');
       right2.textContent = 'Tänään';
       foot.appendChild(left2);
@@ -216,6 +225,7 @@
   }
 
   function render(state) {
+    lastState = state;
     renderSummary(state);
     const active = state.activeIncidents || [];
     const activeSection = el('active-incidents');
@@ -242,4 +252,17 @@
 
   tick();
   setInterval(tick, POLL_MS);
+
+  let resizeTimer;
+  let lastWindow = visibleDays();
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const current = visibleDays();
+      if (current !== lastWindow && lastState) {
+        lastWindow = current;
+        render(lastState);
+      }
+    }, 150);
+  });
 })();
