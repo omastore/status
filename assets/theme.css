@@ -29,7 +29,31 @@
 	--error-button-color: #ffffff;
 
 	--graph-opacity: 1;
-	--graph-filter: hue-rotate(-150deg) saturate(1.4);
+	--graph-filter: none;
+}
+
+article.graph {
+	background-image: none !important;
+	position: relative;
+	overflow: hidden;
+}
+
+article.graph::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image: var(--background);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center right;
+	filter: hue-rotate(-150deg) saturate(1.4);
+	pointer-events: none;
+	z-index: 0;
+}
+
+article.graph > * {
+	position: relative;
+	z-index: 1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,7 +69,11 @@
 		--tag-color: #1f1f1f;
 
 		--graph-opacity: 0.9;
-		--graph-filter: hue-rotate(-150deg) saturate(1.4) brightness(0.9);
+		--graph-filter: none;
+	}
+
+	article.graph::before {
+		filter: hue-rotate(-150deg) saturate(1.4) brightness(0.9);
 	}
 }
 
