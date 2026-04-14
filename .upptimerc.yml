@@ -34,3 +34,9 @@ status-website:
     - rel: stylesheet
       href: https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap
 
+notifications:
+  - type: telegram
+    telegram:
+      botToken: $TELEGRAM_BOT_TOKEN
+      chatId: $TELEGRAM_CHAT_ID
+
