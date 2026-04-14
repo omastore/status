@@ -1,0 +1,26 @@
+{
+  "app": "bun -b bin/status.ts",
+  "watch": {
+    "include": [
+      "**"
+    ],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "node_modules",
+      "dist",
+      "cdk.out"
+    ]
+  },
+  "context": {
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:stackRelativeExports": true,
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+    "domainName": "status.omastore.fi"
+  }
+}

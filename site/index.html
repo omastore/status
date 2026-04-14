@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omastore Status</title>
+    <link rel="icon" href="/logo.png" type="image/png" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <a href="/" class="brand">
+          <img src="/logo.png" alt="" />
+          <span>Omastore Status</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section id="summary" class="summary" aria-live="polite">
+        <div class="summary-indicator" data-status="up"></div>
+        <div class="summary-text">
+          <h1 id="summary-title">Tarkistetaan tilaa…</h1>
+          <p id="summary-sub">Omastore-palveluiden reaaliaikainen tila. Ylläpitäjä Virtue&nbsp;Oy.</p>
+        </div>
+      </section>
+
+      <section id="active-incidents" class="section" hidden>
+        <h2>Aktiiviset häiriöt</h2>
+        <div id="active-incidents-list"></div>
+      </section>
+
+      <section class="section">
+        <h2>Palvelut</h2>
+        <div id="services" class="services"></div>
+      </section>
+
+      <section class="section">
+        <h2>Aiemmat häiriöt</h2>
+        <div id="past-incidents" class="past-incidents"></div>
+      </section>
+
+      <footer class="foot">
+        <p>
+          Päivitetty: <span id="updated-at">—</span> · Päivittyy 10&nbsp;sekunnin välein
+        </p>
+        <p>© <span id="year"></span> Virtue Oy</p>
+      </footer>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

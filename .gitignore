@@ -1,0 +1,8 @@
+node_modules/
+cdk.out/
+dist/
+*.js
+!site/app.js
+*.d.ts
+.env
+.env.local

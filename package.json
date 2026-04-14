@@ -1,0 +1,32 @@
+{
+  "name": "omastore-status",
+  "version": "1.0.0",
+  "private": true,
+  "bin": {
+    "status": "bin/status.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "destroy": "cdk destroy",
+    "deploy": "source .env && bunx cdk deploy --all -c telegramBotToken=$TELEGRAM_BOT_TOKEN -c telegramChatId=$TELEGRAM_CHAT_ID -c telegramWebhookSecret=$TELEGRAM_WEBHOOK_SECRET",
+    "deploy:cert": "source .env && bunx cdk deploy OmastoreStatusCertStack -c telegramBotToken=$TELEGRAM_BOT_TOKEN -c telegramChatId=$TELEGRAM_CHAT_ID -c telegramWebhookSecret=$TELEGRAM_WEBHOOK_SECRET",
+    "deploy:site": "source .env && bunx cdk deploy OmastoreStatusStack -c telegramBotToken=$TELEGRAM_BOT_TOKEN -c telegramChatId=$TELEGRAM_CHAT_ID -c telegramWebhookSecret=$TELEGRAM_WEBHOOK_SECRET",
+    "sync:ui": "aws s3 sync site/ s3://omastore-status-152441485310/ --exclude 'state.json' --cache-control 'no-store, max-age=0' --delete"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^20.14.0",
+    "aws-cdk": "^2.160.0",
+    "esbuild": "^0.24.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.665.0",
+    "aws-cdk-lib": "^2.160.0",
+    "constructs": "^10.3.0"
+  }
+}
