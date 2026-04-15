@@ -98,7 +98,7 @@ function handleTransition(state: State, svc: ServiceDef, result: CheckResult, no
     if (!openAuto) return null;
     openAuto.status = 'closed';
     openAuto.closedAt = now;
-    const upd: IncidentUpdate = { at: now, source: 'auto', text: `Service recovered (${result.detail})` };
+    const upd: IncidentUpdate = { at: now, source: 'auto', text: `Palvelu palautunut (${result.detail})` };
     openAuto.updates.push(upd);
     state.activeIncidents = state.activeIncidents.filter((i) => i.id !== openAuto.id);
     state.pastIncidents.unshift(openAuto);
@@ -111,7 +111,7 @@ function handleTransition(state: State, svc: ServiceDef, result: CheckResult, no
     const upd: IncidentUpdate = {
       at: now,
       source: 'auto',
-      text: `Status changed to ${result.status.toUpperCase()} (${result.detail})`,
+      text: `Tila muuttui: ${statusFi(result.status)} (${result.detail})`,
     };
     openAuto.updates.push(upd);
     return { kind: 'update', incident: openAuto, serviceName: svc.name, detail: result.detail, newStatus: result.status };
@@ -123,11 +123,18 @@ function handleTransition(state: State, svc: ServiceDef, result: CheckResult, no
     type: 'outage',
     status: 'open',
     startedAt: now,
-    title: `${svc.name} is ${result.status.toUpperCase()}`,
-    updates: [{ at: now, source: 'auto', text: `Detected ${result.status.toUpperCase()} — ${result.detail}` }],
+    title: `${svc.name}: ${statusFi(result.status)}`,
+    updates: [{ at: now, source: 'auto', text: `Havaittu: ${statusFi(result.status)} — ${result.detail}` }],
   };
   state.activeIncidents.push(incident);
   return { kind: 'open', incident, serviceName: svc.name, detail: result.detail, newStatus: result.status };
+}
+
+function statusFi(s: Status): string {
+  if (s === 'down') return 'alhaalla';
+  if (s === 'degraded') return 'häiriötila';
+  if (s === 'maintenance') return 'huolto';
+  return 'toiminnassa';
 }
 
 function formatAlert(alert: PendingAlert, incidentIdForHeader?: string): string {
