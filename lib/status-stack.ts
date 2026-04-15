@@ -134,6 +134,7 @@ export class StatusStack extends cdk.Stack {
       distributionPaths: ['/*'],
       exclude: ['state.json'],
       prune: false,
+      cacheControl: [s3deploy.CacheControl.fromString('no-store, max-age=0')],
     });
 
     // ── Self-monitoring alarms ────────────────────────────────────────────
