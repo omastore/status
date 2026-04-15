@@ -115,7 +115,7 @@ async function closeIncident(msg: TelegramMessage, replyToMessageId: number): Pr
     if (target.status === 'closed') return target;
     target.status = 'closed';
     target.closedAt = now;
-    target.updates.push({ at: now, source: 'telegram', text: 'Incident manually closed.' });
+    target.updates.push({ at: now, source: 'telegram', text: 'Häiriö suljettu manuaalisesti.' });
     // Move to past if in active
     const idx = state.activeIncidents.findIndex((i) => i.id === target.id);
     if (idx >= 0) {
@@ -150,7 +150,7 @@ async function createManualIncident(
   const now = new Date().toISOString();
   const id = ulid();
   const title =
-    type === 'maintenance' ? `Planned maintenance: ${description}` : description;
+    type === 'maintenance' ? `Suunniteltu huolto: ${description}` : description;
   const icon = type === 'maintenance' ? '🛠' : '🔴';
 
   const alertText =
