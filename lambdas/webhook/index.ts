@@ -149,12 +149,11 @@ async function createManualIncident(
 ): Promise<void> {
   const now = new Date().toISOString();
   const id = ulid();
-  const title =
-    type === 'maintenance' ? `Suunniteltu huolto: ${description}` : description;
+  const title = type === 'maintenance' ? 'Suunniteltu huolto' : 'Häiriö';
   const icon = type === 'maintenance' ? '🛠' : '🔴';
 
   const alertText =
-    `${icon} <b>${escapeHtml(title)}</b>\n` +
+    `${icon} <b>${escapeHtml(title)}: ${escapeHtml(description)}</b>\n` +
     `Incident: <code>${escapeHtml(id)}</code>\n` +
     `Time: ${now.replace('T', ' ').slice(0, 16)} UTC\n\n` +
     `Reply to this message to post an update. Reply <code>/close</code> to close.`;
@@ -170,7 +169,7 @@ async function createManualIncident(
       startedAt: now,
       title,
       telegramMessageId: alertMsg.message_id,
-      updates: [{ at: now, source: 'telegram', text: `Manually opened via Telegram: ${description}` }],
+      updates: [{ at: now, source: 'telegram', text: description }],
     };
     state.activeIncidents.push(incident);
   });
