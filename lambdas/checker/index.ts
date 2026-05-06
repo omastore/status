@@ -5,6 +5,7 @@ import { ulid } from '../shared/ulid';
 
 const TIMEOUT_MS = 10_000;
 const HISTORY_DAYS = 90;
+const MIN_PERSIST_MS = 60_000;
 
 interface CheckResult {
   key: ServiceDef['key'];
@@ -101,8 +102,11 @@ function handleTransition(state: State, svc: ServiceDef, result: CheckResult, no
     const upd: IncidentUpdate = { at: now, source: 'auto', text: `Palvelu palautunut (${result.detail})` };
     openAuto.updates.push(upd);
     state.activeIncidents = state.activeIncidents.filter((i) => i.id !== openAuto.id);
-    state.pastIncidents.unshift(openAuto);
-    state.pastIncidents = state.pastIncidents.slice(0, 100);
+    const duration = Date.parse(now) - Date.parse(openAuto.startedAt);
+    if (duration >= MIN_PERSIST_MS) {
+      state.pastIncidents.unshift(openAuto);
+      state.pastIncidents = state.pastIncidents.slice(0, 100);
+    }
     return { kind: 'recovery', incident: openAuto, serviceName: svc.name, detail: result.detail, newStatus: 'up' };
   }
 
