@@ -85,8 +85,23 @@ function handleTransition(state: State, svc: ServiceDef, result: CheckResult, no
   current.lastCheckedAt = now;
 
   if (previousStatus === result.status) {
+    current.pendingStatus = null;
+    current.pendingSince = null;
     return null;
   }
+
+  // Recovery (any → up) is applied immediately. Transitions away from `up`
+  // require two consecutive matching checks to avoid Telegram alerts for
+  // single-tick timeouts.
+  if (result.status !== 'up') {
+    if (current.pendingStatus !== result.status) {
+      current.pendingStatus = result.status;
+      current.pendingSince = now;
+      return null;
+    }
+  }
+  current.pendingStatus = null;
+  current.pendingSince = null;
 
   current.status = result.status;
   current.lastStatusChangeAt = now;

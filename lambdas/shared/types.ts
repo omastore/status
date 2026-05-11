@@ -22,6 +22,8 @@ export interface ServiceState {
   status: Status;
   lastCheckedAt: string;
   lastStatusChangeAt: string;
+  pendingStatus?: Status | null;
+  pendingSince?: string | null;
 }
 
 export interface IncidentUpdate {
