@@ -194,16 +194,17 @@ main.wrap { padding-top: 28px; padding-bottom: 48px; }
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-.incident > :where(.incident-head, .incident-updates, details > summary) { padding-left: 16px; padding-right: 16px; }
-.incident > .incident-head { padding-top: 14px; padding-bottom: 0; }
-.incident > .incident-updates { padding-top: 0; padding-bottom: 14px; }
-.incident > details > summary { padding-top: 14px; padding-bottom: 14px; }
-.incident > details[open] > summary { padding-bottom: 10px; }
-.incident > details > :where(.incident-updates, .incident-members) { padding-bottom: 14px; }
 .incident.maintenance { border-left-color: var(--maintenance); }
-.incident.closed { border-left-color: var(--up); opacity: 0.85; }
+.incident.closed { border-left-color: var(--up); opacity: 0.9; }
+
+/* Active (always-expanded) layout */
+.incident > .incident-head { padding: 14px 16px 0 16px; }
+.incident > .incident-updates { padding: 10px 16px 14px 16px; }
+
+/* Collapsible (past) layout */
 .incident > details { display: block; }
 .incident > details > summary {
+  padding: 14px 40px 14px 16px;
   cursor: pointer;
   list-style: none;
   position: relative;
@@ -225,29 +226,57 @@ main.wrap { padding-top: 28px; padding-bottom: 48px; }
 .incident > details[open] > summary::after {
   transform: translateY(-30%) rotate(-135deg);
 }
-.incident > details > summary .incident-meta { margin-right: 22px; }
+.incident > details > .incident-updates { padding: 0 16px 14px 16px; }
+.incident > details > .incident-members {
+  display: grid;
+  gap: 10px;
+  padding: 4px 16px 14px 16px;
+}
 
 .incident.group > details > summary .incident-title::before {
   content: '⚠ ';
   color: var(--text-soft);
   font-weight: normal;
 }
-.incident-members {
-  display: grid;
-  gap: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
-}
 .incident.member {
   border-left-width: 2px;
   background: var(--surface-muted);
   box-shadow: none;
 }
+
 .incident-head {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 6px;
+}
+.incident > details > summary .incident-head {
+  display: grid;
+  grid-template-columns: minmax(96px, max-content) 1fr max-content;
+  gap: 16px;
+  align-items: baseline;
+}
+.incident-date {
+  font-size: 12px;
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.incident-duration {
+  font-size: 12px;
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+.incident-expanded {
+  padding: 10px 16px 14px 16px;
+}
+.incident-expanded > .incident-meta {
+  margin-bottom: 8px;
+}
+.incident-expanded > .incident-updates {
+  padding: 0;
 }
 .incident-title { font-weight: 600; }
 .incident-meta { font-size: 12px; color: var(--text-soft); }

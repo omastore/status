@@ -206,6 +206,41 @@
       : `Alkoi ${started}`;
   }
 
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('fi-FI', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  }
+
+  function fmtDuration(ms) {
+    const s = Math.max(0, Math.round(ms / 1000));
+    if (s < 60) return `${s} s`;
+    const m = Math.floor(s / 60);
+    const rem = s % 60;
+    if (m < 60) return rem ? `${m} min ${rem} s` : `${m} min`;
+    const h = Math.floor(m / 60);
+    const mm = m % 60;
+    return mm ? `${h} h ${mm} min` : `${h} h`;
+  }
+
+  function buildSummaryHead({ date, title, duration }) {
+    const head = document.createElement('div');
+    head.className = 'incident-head';
+    const dateEl = document.createElement('span');
+    dateEl.className = 'incident-date';
+    dateEl.textContent = date;
+    const titleEl = document.createElement('span');
+    titleEl.className = 'incident-title';
+    titleEl.textContent = title;
+    const durEl = document.createElement('span');
+    durEl.className = 'incident-duration';
+    durEl.textContent = duration;
+    head.appendChild(dateEl);
+    head.appendChild(titleEl);
+    head.appendChild(durEl);
+    return head;
+  }
+
   function renderActiveIncident(inc) {
     const wrap = document.createElement('article');
     wrap.className = 'incident' + (inc.type === 'maintenance' ? ' maintenance' : '');
@@ -230,20 +265,19 @@
     wrap.className = 'incident closed' + (inc.type === 'maintenance' ? ' maintenance' : '') + (opts.nested ? ' member' : '');
     const details = document.createElement('details');
     const summary = document.createElement('summary');
-    const head = document.createElement('div');
-    head.className = 'incident-head';
-    const title = document.createElement('div');
-    title.className = 'incident-title';
-    title.textContent = inc.title;
+    const endMs = inc.closedAt ? Date.parse(inc.closedAt) : Date.now();
+    const duration = fmtDuration(endMs - Date.parse(inc.startedAt));
+    summary.appendChild(buildSummaryHead({ date: fmtDate(inc.startedAt), title: inc.title, duration }));
+    details.appendChild(summary);
+    const expanded = document.createElement('div');
+    expanded.className = 'incident-expanded';
     const meta = document.createElement('div');
     meta.className = 'incident-meta';
     meta.textContent = incidentMetaText(inc);
-    head.appendChild(title);
-    head.appendChild(meta);
-    summary.appendChild(head);
-    details.appendChild(summary);
+    expanded.appendChild(meta);
     const updates = buildUpdatesList(inc.updates);
-    if (updates) details.appendChild(updates);
+    if (updates) expanded.appendChild(updates);
+    details.appendChild(expanded);
     wrap.appendChild(details);
     return wrap;
   }
@@ -255,24 +289,15 @@
     wrap.className = 'incident closed group';
     const details = document.createElement('details');
     const summary = document.createElement('summary');
-    const head = document.createElement('div');
-    head.className = 'incident-head';
-    const title = document.createElement('div');
-    title.className = 'incident-title';
-    title.textContent = `${group.length} samanaikaista häiriötä`;
-    const meta = document.createElement('div');
-    meta.className = 'incident-meta';
     const starts = group.map((i) => Date.parse(i.startedAt));
     const ends = group.map((i) => (i.closedAt ? Date.parse(i.closedAt) : Date.now()));
-    const startIso = new Date(Math.min(...starts)).toISOString();
-    const endIso = new Date(Math.max(...ends)).toISOString();
-    const allClosed = group.every((i) => i.status === 'closed' && i.closedAt);
-    meta.textContent = allClosed
-      ? `Alkoi ${fmtTime(startIso)} · Ratkaistu ${fmtTime(endIso)}`
-      : `Alkoi ${fmtTime(startIso)}`;
-    head.appendChild(title);
-    head.appendChild(meta);
-    summary.appendChild(head);
+    const minStart = Math.min(...starts);
+    const maxEnd = Math.max(...ends);
+    summary.appendChild(buildSummaryHead({
+      date: fmtDate(new Date(minStart).toISOString()),
+      title: `${group.length} samanaikaista häiriötä`,
+      duration: fmtDuration(maxEnd - minStart),
+    }));
     details.appendChild(summary);
 
     const members = document.createElement('div');
