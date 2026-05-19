@@ -161,7 +161,131 @@
     }
   }
 
-  function renderIncidents(listEl, incidents) {
+  const GROUP_WINDOW_MS = 60_000;
+
+  function groupNearby(incidents) {
+    const sorted = [...incidents].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+    const groups = [];
+    for (const inc of sorted) {
+      const last = groups[groups.length - 1];
+      if (last) {
+        const lastStart = Date.parse(last[0].startedAt);
+        if (Math.abs(lastStart - Date.parse(inc.startedAt)) <= GROUP_WINDOW_MS) {
+          last.push(inc);
+          continue;
+        }
+      }
+      groups.push([inc]);
+    }
+    return groups;
+  }
+
+  function buildUpdatesList(updates) {
+    if (!updates || updates.length === 0) return null;
+    const ul = document.createElement('ul');
+    ul.className = 'incident-updates';
+    const sorted = [...updates].sort((a, b) => b.at.localeCompare(a.at));
+    for (const u of sorted) {
+      const li = document.createElement('li');
+      const t = document.createElement('time');
+      t.dateTime = u.at;
+      t.textContent = fmtTime(u.at);
+      li.appendChild(t);
+      const txt = document.createElement('div');
+      txt.textContent = u.text;
+      li.appendChild(txt);
+      ul.appendChild(li);
+    }
+    return ul;
+  }
+
+  function incidentMetaText(inc) {
+    const started = fmtTime(inc.startedAt);
+    return inc.status === 'closed' && inc.closedAt
+      ? `Alkoi ${started} · Ratkaistu ${fmtTime(inc.closedAt)}`
+      : `Alkoi ${started}`;
+  }
+
+  function renderActiveIncident(inc) {
+    const wrap = document.createElement('article');
+    wrap.className = 'incident' + (inc.type === 'maintenance' ? ' maintenance' : '');
+    const head = document.createElement('div');
+    head.className = 'incident-head';
+    const title = document.createElement('div');
+    title.className = 'incident-title';
+    title.textContent = inc.title;
+    const meta = document.createElement('div');
+    meta.className = 'incident-meta';
+    meta.textContent = incidentMetaText(inc);
+    head.appendChild(title);
+    head.appendChild(meta);
+    wrap.appendChild(head);
+    const updates = buildUpdatesList(inc.updates);
+    if (updates) wrap.appendChild(updates);
+    return wrap;
+  }
+
+  function renderCollapsibleIncident(inc, opts = {}) {
+    const wrap = document.createElement('article');
+    wrap.className = 'incident closed' + (inc.type === 'maintenance' ? ' maintenance' : '') + (opts.nested ? ' member' : '');
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    const head = document.createElement('div');
+    head.className = 'incident-head';
+    const title = document.createElement('div');
+    title.className = 'incident-title';
+    title.textContent = inc.title;
+    const meta = document.createElement('div');
+    meta.className = 'incident-meta';
+    meta.textContent = incidentMetaText(inc);
+    head.appendChild(title);
+    head.appendChild(meta);
+    summary.appendChild(head);
+    details.appendChild(summary);
+    const updates = buildUpdatesList(inc.updates);
+    if (updates) details.appendChild(updates);
+    wrap.appendChild(details);
+    return wrap;
+  }
+
+  function renderGroup(group) {
+    if (group.length === 1) return renderCollapsibleIncident(group[0]);
+
+    const wrap = document.createElement('article');
+    wrap.className = 'incident closed group';
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    const head = document.createElement('div');
+    head.className = 'incident-head';
+    const title = document.createElement('div');
+    title.className = 'incident-title';
+    title.textContent = `${group.length} samanaikaista häiriötä`;
+    const meta = document.createElement('div');
+    meta.className = 'incident-meta';
+    const starts = group.map((i) => Date.parse(i.startedAt));
+    const ends = group.map((i) => (i.closedAt ? Date.parse(i.closedAt) : Date.now()));
+    const startIso = new Date(Math.min(...starts)).toISOString();
+    const endIso = new Date(Math.max(...ends)).toISOString();
+    const allClosed = group.every((i) => i.status === 'closed' && i.closedAt);
+    meta.textContent = allClosed
+      ? `Alkoi ${fmtTime(startIso)} · Ratkaistu ${fmtTime(endIso)}`
+      : `Alkoi ${fmtTime(startIso)}`;
+    head.appendChild(title);
+    head.appendChild(meta);
+    summary.appendChild(head);
+    details.appendChild(summary);
+
+    const members = document.createElement('div');
+    members.className = 'incident-members';
+    for (const inc of group) {
+      members.appendChild(renderCollapsibleIncident(inc, { nested: true }));
+    }
+    details.appendChild(members);
+    wrap.appendChild(details);
+    return wrap;
+  }
+
+  function renderActiveIncidents(listEl, incidents) {
     listEl.innerHTML = '';
     if (incidents.length === 0) {
       const empty = document.createElement('div');
@@ -170,45 +294,19 @@
       listEl.appendChild(empty);
       return;
     }
-    for (const inc of incidents) {
-      const wrap = document.createElement('article');
-      wrap.className = 'incident' + (inc.type === 'maintenance' ? ' maintenance' : '') + (inc.status === 'closed' ? ' closed' : '');
+    for (const inc of incidents) listEl.appendChild(renderActiveIncident(inc));
+  }
 
-      const head = document.createElement('div');
-      head.className = 'incident-head';
-      const title = document.createElement('div');
-      title.className = 'incident-title';
-      title.textContent = inc.title;
-      const meta = document.createElement('div');
-      meta.className = 'incident-meta';
-      const started = fmtTime(inc.startedAt);
-      meta.textContent = inc.status === 'closed' && inc.closedAt
-        ? `Alkoi ${started} · Ratkaistu ${fmtTime(inc.closedAt)}`
-        : `Alkoi ${started}`;
-      head.appendChild(title);
-      head.appendChild(meta);
-      wrap.appendChild(head);
-
-      if (inc.updates && inc.updates.length > 0) {
-        const ul = document.createElement('ul');
-        ul.className = 'incident-updates';
-        const sorted = [...inc.updates].sort((a, b) => b.at.localeCompare(a.at));
-        for (const u of sorted) {
-          const li = document.createElement('li');
-          const t = document.createElement('time');
-          t.dateTime = u.at;
-          t.textContent = fmtTime(u.at);
-          li.appendChild(t);
-          const txt = document.createElement('div');
-          txt.textContent = u.text;
-          li.appendChild(txt);
-          ul.appendChild(li);
-        }
-        wrap.appendChild(ul);
-      }
-
-      listEl.appendChild(wrap);
+  function renderPastIncidents(listEl, incidents) {
+    listEl.innerHTML = '';
+    if (incidents.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'Ei yhtään.';
+      listEl.appendChild(empty);
+      return;
     }
+    for (const group of groupNearby(incidents)) listEl.appendChild(renderGroup(group));
   }
 
   function fmtTime(iso) {
@@ -231,12 +329,12 @@
     const activeSection = el('active-incidents');
     if (active.length > 0) {
       activeSection.hidden = false;
-      renderIncidents(el('active-incidents-list'), active);
+      renderActiveIncidents(el('active-incidents-list'), active);
     } else {
       activeSection.hidden = true;
     }
     renderServices(state);
-    renderIncidents(el('past-incidents'), state.pastIncidents || []);
+    renderPastIncidents(el('past-incidents'), state.pastIncidents || []);
     el('updated-at').textContent = fmtTime(state.updatedAt);
   }
 

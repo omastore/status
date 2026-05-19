@@ -192,11 +192,57 @@ main.wrap { padding-top: 28px; padding-bottom: 48px; }
   border: 1px solid var(--border);
   border-left: 3px solid var(--down);
   border-radius: var(--radius);
-  padding: 14px 16px;
   box-shadow: var(--shadow);
 }
+.incident > :where(.incident-head, .incident-updates, details > summary) { padding-left: 16px; padding-right: 16px; }
+.incident > .incident-head { padding-top: 14px; padding-bottom: 0; }
+.incident > .incident-updates { padding-top: 0; padding-bottom: 14px; }
+.incident > details > summary { padding-top: 14px; padding-bottom: 14px; }
+.incident > details[open] > summary { padding-bottom: 10px; }
+.incident > details > :where(.incident-updates, .incident-members) { padding-bottom: 14px; }
 .incident.maintenance { border-left-color: var(--maintenance); }
 .incident.closed { border-left-color: var(--up); opacity: 0.85; }
+.incident > details { display: block; }
+.incident > details > summary {
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  user-select: none;
+}
+.incident > details > summary::-webkit-details-marker { display: none; }
+.incident > details > summary::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-soft);
+  border-bottom: 2px solid var(--text-soft);
+  transform: translateY(-70%) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+.incident > details[open] > summary::after {
+  transform: translateY(-30%) rotate(-135deg);
+}
+.incident > details > summary .incident-meta { margin-right: 22px; }
+
+.incident.group > details > summary .incident-title::before {
+  content: '⚠ ';
+  color: var(--text-soft);
+  font-weight: normal;
+}
+.incident-members {
+  display: grid;
+  gap: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.incident.member {
+  border-left-width: 2px;
+  background: var(--surface-muted);
+  box-shadow: none;
+}
 .incident-head {
   display: flex;
   justify-content: space-between;
